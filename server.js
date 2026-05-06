@@ -1,32 +1,37 @@
 const http = require('http');
 const { Server } = require('socket.io');
 
+// 1. HTTP Server erstellen
 const server = http.createServer();
+
+// 2. Socket.io initialisieren mit CORS-Freigabe für Ihr Angular Frontend
 const io = new Server(server, {
     cors: {
-        // Falls Angular noch auf localhost läuft, muss das hier stehen.
-        // Im produktiven Betrieb hier die URL Ihrer PWA eintragen.
-        origin: ["http://localhost:4200", "https://extranet.eglizimmerei.ch", "https://intranet.eglizimmerei.ch", "https://egli.thomas-braendle.com"],
+        origin: "https://egli.thomas-braendle.com", // Hier Ihre Angular-URL eintragen
         methods: ["GET", "POST"],
         credentials: true
     },
-    transports: ['websocket', 'polling'] // Erlaubt Fallback, falls wss blockiert wird
+    transports: ['websocket'] // Erzwingt Websocket für stabilere Verbindung auf Render
 });
 
+// 3. Event-Logik (Wer kommuniziert mit wem)
 io.on('connection', (socket) => {
-    console.log('Client verbunden:', socket.id);
+    console.log('Mitarbeiter verbunden:', socket.id);
 
-    socket.on('message', (msg) => {
-        io.emit('message', msg);
+    // Empfängt Nachricht von Angular (z.B. CHAT oder REFRESH_NEWS)
+    socket.on('message', (data) => {
+        // Verteilt die Nachricht an ALLE anderen verbundenen Clients
+        socket.broadcast.emit('message', data);
     });
 
     socket.on('disconnect', () => {
-        console.log('Client getrennt');
+        console.log('Verbindung getrennt');
     });
 });
 
-// WICHTIG: Render vergibt den Port 10000 automatisch via process.env.PORT
-const port = process.env.PORT || 3000;
-server.listen(port, '0.0.0.0', () => {
-    console.log(`Server läuft auf Port ${port}`);
+// 4. WICHTIG: Port-Bindung für Render
+// Render vergibt Port 10000. '0.0.0.0' ist zwingend erforderlich!
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, '0.0.0.0', () => {
+    console.log(`Websocket-Server läuft auf Port ${PORT}`);
 });

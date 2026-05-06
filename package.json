@@ -1,6 +1,7 @@
 {
   "name": "egli-websocket-server",
   "version": "1.0.0",
+  "description": "Websocket für Egli App interne Kommunikation",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
