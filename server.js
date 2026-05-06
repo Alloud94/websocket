@@ -6,7 +6,7 @@ const io = new Server(server, {
     cors: {
         // Falls Angular noch auf localhost läuft, muss das hier stehen.
         // Im produktiven Betrieb hier die URL Ihrer PWA eintragen.
-        origin: ["http://localhost:4200", "https://extranet.eglizimmerei.ch", "https://intranet.eglizimmerei.ch"],
+        origin: ["http://localhost:4200", "https://extranet.eglizimmerei.ch", "https://intranet.eglizimmerei.ch", "https://egli.thomas-braendle.com"],
         methods: ["GET", "POST"],
         credentials: true
     },
